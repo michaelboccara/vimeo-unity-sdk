@@ -6,6 +6,7 @@ using Vimeo.Player;
 using Vimeo.Recorder;
 using Vimeo.SimpleJSON;
 using System.Linq;
+using System;
 
 namespace Vimeo
 {  
@@ -32,6 +33,43 @@ namespace Vimeo
         {
             return (settings is VimeoPlayer) ||
                 (settings is RecorderSettings && (settings as RecorderSettings).replaceExisting);
+        }
+
+        protected void GetCurrentVideoInfo(int vimeoVideoId)
+        {
+            var settings = target as VimeoSettings;
+            if (!settings.Authenticated()) return;
+            InitAPI();
+
+            api.OnRequestComplete += GetCurrentVideoInfoComplete;
+            api.OnError += OnRequestError;
+
+            api.GetVideoFileUrlByVimeoId(vimeoVideoId);
+
+        }
+
+        protected void GetCurrentVideoInfoComplete(string response)
+        {
+            var settings = target as VimeoSettings;
+            settings.vimeoVideos.Clear();
+
+            api.OnRequestComplete -= GetCurrentVideoInfoComplete;
+            api.OnError -= OnRequestError;
+
+            if (!EditorApplication.isPlaying)
+            {
+                DestroyImmediate(settings.gameObject.GetComponent<VimeoApi>());
+            }
+
+            var json = JSON.Parse(response);
+            JSONNode videoData = json;
+            VimeoVideo vimeoVideo = new VimeoVideo(videoData);
+
+            var recorderSettings = settings as RecorderSettings;
+            recorderSettings.videoName = vimeoVideo.GetVideoName();
+            //recorderSettings.privacyMode = vimeoVideo.
+            //recorderSettings.enableDownloads = vimeoVideo.
+            //recorderSettings.enableReviewPage = vimeoVideo.
         }
 
         protected void GetRecentVideos()
@@ -231,6 +269,7 @@ namespace Vimeo
                         var recorder = player as RecorderSettings;
                         recorder.videoName = player.currentVideo.GetVideoName();
                     }
+                    //GetCurrentVideoInfo(player.currentVideo.id);
                 }
 
                 if (GUILayout.Button("↺", GUILayout.Width(25)) || 
