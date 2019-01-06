@@ -118,7 +118,7 @@ namespace Vimeo
                 DestroyImmediate(settings.gameObject.GetComponent<VimeoApi>());
             }
 
-            var json = JSON.Parse(response);
+            var json = JSONNode.Parse(response);
             JSONNode videoData = json["data"];
 
             if (videoData.Count == 0) {
@@ -162,7 +162,7 @@ namespace Vimeo
                 DestroyImmediate(settings.gameObject.GetComponent<VimeoApi>());
             }
 
-            var json = JSON.Parse(response);
+            var json = JSONNode.Parse(response);
             var folderData = json["data"];
 
             string folder_prefix = "";
