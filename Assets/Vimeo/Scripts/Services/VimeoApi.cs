@@ -298,7 +298,16 @@ namespace Vimeo
                     }
                     else
                     {
+                        if (page > 1)
+                        {
+                            // It's OK, make it the end of pages
+                            Debug.LogWarning("[VimeoApi] Paged request error for url " + request.url + ", at page #" + page + ", error: " + request.error + ", " + request.downloadHandler.text);
+                            break;
+                        }
+                        else
+                    {
                         SendError(request.url + " - " + request.downloadHandler.text, request.downloadHandler.text);
+                    }
                     }
                     yield break;
                 }
@@ -311,7 +320,7 @@ namespace Vimeo
                     JSONNode element = pageData[i];
                     data.Add(element);
                 }
-                if (pageData.Count < 100)
+                if (pageData.Count < per_page)
                 {
                     break;
                 }
