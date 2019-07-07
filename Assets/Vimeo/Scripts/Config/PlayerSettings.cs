@@ -23,9 +23,12 @@ namespace Vimeo.Player
         Depthkit
 #endif 
     }
-
+    
     public class PlayerSettings : VimeoSettings
     {
+        // Played video
+        public int vimeoId;
+
         public VideoPlayerType videoPlayerType = VideoPlayerType.UnityPlayer;
 #if VIMEO_AVPRO_VIDEO_SUPPORT
         public RenderHeads.Media.AVProVideo.MediaPlayer mediaPlayer;
@@ -33,7 +36,7 @@ namespace Vimeo.Player
 #if VIMEO_DEPTHKIT_SUPPORT
         public Depthkit.Depthkit_Clip depthKitClip;
 #endif         
-        public StreamingResolution selectedResolution = StreamingResolution.x2160p_4K;
+        public StreamingResolution selectedResolution = StreamingResolution.x2160p_4K; 
         public bool muteAudio = false;
         public bool autoPlay = true;
         public int startTime = 0;

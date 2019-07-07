@@ -96,7 +96,7 @@ namespace Vimeo
             }
         }
 
-        private int maxRetries = 3;
+        private int maxRetries = -1;
         private int m_totalRetries = 0;
         public int totalRetries
         {
@@ -142,7 +142,7 @@ namespace Vimeo
 
             yield return VimeoApi.SendRequest(m_uploadRequest);
 
-            if (VimeoApi.IsNetworkError(m_uploadRequest)) {
+            if (m_uploadRequest.isNetworkError || m_uploadRequest.isHttpError) {
                 UploadError(m_uploadRequest.responseCode + ": " + m_uploadRequest.error);
             } else {
                 m_isUploading = false;
@@ -157,7 +157,7 @@ namespace Vimeo
 
         public void UploadError(string msg)
         {
-            if (m_totalRetries >= maxRetries) {
+            if (maxRetries >= 0 && m_totalRetries >= maxRetries) {
                 m_isUploading = false;
                 Debug.LogError("[VideoChunk] " + msg);
 

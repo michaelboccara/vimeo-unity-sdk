@@ -48,12 +48,14 @@ namespace Vimeo
         [HideInInspector]
         public string token;
         public static string API_URL = "https://api.vimeo.com";
-        private WWWForm form;
+
+        private WWWForm _form;
+        private void ResetForm() { _form = new WWWForm(); }
+        private WWWForm form { get { if (_form == null) _form = new WWWForm(); return _form; } }
 
         public void Start()
         {
             this.hideFlags = HideFlags.HideInInspector;
-            form = new WWWForm();
         }
 
         public void GetVideoFileUrlByVimeoId(int video_id, string fields = "name,uri,duration,width,height,spatial,play,files,description")
@@ -61,15 +63,18 @@ namespace Vimeo
             StartCoroutine("Request", "/videos/" + video_id + "?fields=" + fields);
         }
 
-        public void GetUserFolders()
+        public void GetUserFolders(VimeoFolder.Collection collectionType)
         {
-            StartCoroutine("Request", "/me/folders?fields=name,uri");
+            string collectionTag = VimeoFolder.CollectionTag[(int)collectionType];
+
+            StartCoroutine("Request", "/me/" + collectionTag  + "? fields=name,uri");
         }
 
         public void AddVideoToFolder(VimeoVideo video, VimeoFolder folder)
         {
             if (folder.id > 0 && video.uri != null) {
-                IEnumerator coroutine = Put("/me/folders/" + folder.id + "/videos?uris=" + video.uri);
+                string folderCollectionTag = VimeoFolder.CollectionTag[(int)folder.collectionType];
+                IEnumerator coroutine = Put("/me/" + folderCollectionTag + "/" + folder.id + "/videos?uris=" + video.uri);
                 StartCoroutine(coroutine);
             }
         }
@@ -80,10 +85,11 @@ namespace Vimeo
             //StartCoroutine("Request", "/me/videos?fields=" + fields + "&direction=" + direction + "&page=" + page + "&per_page=" + per_page + "&sort=" + sort);
         }
 
-        public void GetVideosInFolder(VimeoFolder folder, string fields = "name,uri", int per_page = 100, string direction = "desc", string sort = "alphabetical")
+        public void GetVideosInFolder(VimeoFolder folder,string fields = "name,uri", int per_page = 100, string direction = "desc", string sort = "alphabetical")
         {
-            StartCoroutine(PagedRequest(per_page, "/me/folders/" + folder.id + "/videos?fields=" + fields + "&direction=" + direction + "&sort=" + sort));
-            //StartCoroutine("Request", "/me/folders/" + folder.id + "/videos?fields=" + fields + "&direction=" + direction + "&page=" + page + "&per_page=" + per_page + "&sort=" + sort);
+            string folderCollectionTag = VimeoFolder.CollectionTag[(int)folder.collectionType];
+            StartCoroutine(PagedRequest(per_page, "/me/" + folderCollectionTag + "/" + folder.id + "/videos?fields=" + fields + "&direction=" + direction + "&sort=" + sort));
+            //StartCoroutine("Request", "/me/" + folderCollectionTag + "/" + folder.id + "/videos?fields=" + fields + "&direction=" + direction + "&page=" + page + "&per_page=" + per_page + "&sort=" + sort);
         }
 
         public void SetVideoViewPrivacy(PrivacyModeDisplay mode)
@@ -172,10 +178,20 @@ namespace Vimeo
                 request.SetRequestHeader("X-HTTP-Method-Override", "PATCH");
                 yield return VimeoApi.SendRequest(request);
 
-                // Reset the form
-                form = new WWWForm();
+                ResetForm();
                 ResponseHandler(request);
             }
+        }
+
+        public IEnumerator SendVideoComment(VimeoVideo video, string comment)
+        {
+            // Reset the form
+            ResetForm();
+            form.AddField("text", comment);
+
+            yield return Post(API_URL + "/videos/" + video.id + "/comments");
+
+            ResetForm();
         }
 
         public IEnumerator TusUploadNew(long fileByteCount)
@@ -191,7 +207,7 @@ namespace Vimeo
             }
         }
 
-        public IEnumerator TusUploadReplace(string videoId, string file_name, long fileByteCount)
+        public IEnumerator TusUploadReplace(int videoId, string file_name, long fileByteCount)
         {
             string tusResourceRequestBody = "{ \"file_name\": \"" + file_name + "\", \"upload\": { \"status\": \"in_progress\", \"size\": \"" + fileByteCount.ToString() + "\", \"approach\": \"tus\" } }";
 
@@ -206,7 +222,7 @@ namespace Vimeo
             }
         }
 
-        IEnumerator Put(string api_path)
+        public IEnumerator Put(string api_path)
         {
             if (token != null) {
                 byte[] data = new byte[] { 0x00 };
@@ -215,6 +231,33 @@ namespace Vimeo
                     yield return VimeoApi.SendRequest(request);
                     ResponseHandler(request);
                 }
+            }
+        }
+
+        public IEnumerator Put(string api_path, string body)
+        {
+            if (token != null)
+            {
+                using (UnityWebRequest request = UnityWebRequest.Put(API_URL + api_path, body))
+                {
+                    PrepareHeaders(request);
+                    yield return VimeoApi.SendRequest(request);
+                    ResponseHandler(request);
+                }
+            }
+        }
+
+        public IEnumerator Post(string url)
+        {
+            using (UnityWebRequest request = UnityWebRequest.Post(url, form))
+            {
+                PrepareHeaders(request);
+                request.SetRequestHeader("X-HTTP-Method-Override", "POST");
+                yield return VimeoApi.SendRequest(request);
+
+                // Reset the form
+                ResetForm();
+                ResponseHandler(request);
             }
         }
 
@@ -272,7 +315,16 @@ namespace Vimeo
                     }
                     else
                     {
-                        SendError(request.url + " - " + request.downloadHandler.text, request.downloadHandler.text);
+                        if (page > 1)
+                        {
+                            // It's OK, make it the end of pages
+                            Debug.LogWarning("[VimeoApi] Paged request error for url " + request.url + ", at page #" + page + ", error: " + request.error + ", " + request.downloadHandler.text);
+                            break;
+                        }
+                        else
+                        {
+                            SendError(request.url + " - " + request.downloadHandler.text, request.downloadHandler.text);
+                        }
                     }
                     yield break;
                 }
@@ -285,7 +337,7 @@ namespace Vimeo
                     JSONNode element = pageData[i];
                     data.Add(element);
                 }
-                if (pageData.Count < 100)
+                if (pageData.Count < per_page)
                 {
                     break;
                 }
@@ -317,7 +369,7 @@ namespace Vimeo
             r.SetRequestHeader("Content-Type", "application/json");
             PrepareHeaders(r, withAuthorization, apiVersion);
         }
-        
+
         private void PrepareHeaders(UnityWebRequest r, bool withAuthorization = true, string apiVersion = "3.4")
         {
             r.chunkedTransfer = false;

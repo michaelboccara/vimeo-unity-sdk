@@ -15,6 +15,8 @@ namespace Vimeo
         public VimeoFolder currentFolder;
         public List<VimeoFolder> vimeoFolders = new List<VimeoFolder>();
 
+        public VimeoFolder.Collection currentFolderType = VimeoFolder.Collection.Undefined;
+
         private string m_vimeoToken;
 
         [Tooltip("The token is used to give your app access to your Vimeo account.")]
@@ -25,8 +27,10 @@ namespace Vimeo
         public bool signInError = false;
         private const string VIMEO_TOKEN_PREFIX = "vimeo-token-";
 
-        // Played or Overwritten video
-        public string vimeoVideoId;
+        public VimeoFolder.Collection GetCurrentFolderType()
+        {
+            return currentFolderType;
+        }
 
         public int GetCurrentFolderIndex()
         {
@@ -116,6 +120,7 @@ namespace Vimeo
 
             currentVideo = null;
             currentFolder = null;
+            currentFolderType = VimeoFolder.Collection.Undefined;
             vimeoSignIn = false;
             signInError = false;
         }

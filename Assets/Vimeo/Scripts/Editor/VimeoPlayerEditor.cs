@@ -89,7 +89,9 @@ namespace Vimeo
 #else
                 player.videoPlayerType = VideoPlayerType.UnityPlayer;
 #endif
-                bool updated = GUISelectFolder();
+                bool updated;
+                updated = GUISelectFolderType();
+                updated = GUISelectFolder(updated);
                 GUISelectVideo(updated);
 
                 EditorGUILayout.PropertyField(so.FindProperty("selectedResolution"), new GUIContent("Resolution"));
@@ -113,7 +115,7 @@ namespace Vimeo
                     GUILayout.BeginHorizontal();
                     if (GUILayout.Button("Load Video", GUILayout.Height(30), GUILayout.Width(100))) {
                         player.autoPlay = true;
-                        player.LoadVideo(player.vimeoVideoId);
+                        player.LoadVideo(player.vimeoId);   
                     }
 
                     if (player.videoPlayerType == VideoPlayerType.UnityPlayer && player.IsVideoMetadataLoaded()) {

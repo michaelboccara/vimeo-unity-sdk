@@ -45,11 +45,6 @@ namespace Vimeo.Recorder
             if (recordOnStart) {
                 BeginRecording();
             }
-            else if (replaceExisting)
-            {
-                // we want an updated video list, without a need for the editor
-                FetchVideos();
-            }
         }
 
         public void BeginRecording()
@@ -83,20 +78,22 @@ namespace Vimeo.Recorder
         {
             isRecording = false;
             isUploading = false;
+            if (encoder == null || publisher == null)
+                return;
             //encoder.DeleteVideoFile();
             Destroy(publisher);
             encoder.CancelRecording();
         }
 
-        void FetchVideos()
+        public void FetchVideos()
         {
             if (fetcher == null)
             {
+                isReady = false;
                 fetcher = gameObject.AddComponent<VimeoFetcher>();
-                fetcher.Init(this);
                 fetcher.OnFetchComplete += OnFetchComplete;
                 fetcher.OnFetchError += OnFetchError;
-                fetcher.GetVideosInFolder(currentFolder);
+                fetcher.GetVideosInFolder();
             }
         }
 
@@ -143,25 +140,21 @@ namespace Vimeo.Recorder
 
             if (replaceExisting)
             {
-                if (fetcher != null)
+                if (!isReady)
                 {
                     // bad situation - need some waiting point
-                    Debug.LogError("Videos fetching is not complete before replacing publishing");
+                    Debug.LogWarning("Videos fetching is not ready for publishing with replacement - need to fetch project's videos list first");
                 }
 
-                if (string.IsNullOrEmpty(vimeoVideoId))
+                if (currentVideo.id <= 0)
                 {
                     if (!string.IsNullOrEmpty(videoName))
                     {
                         SetVimeoIdFromName();
                     }
                 }
-                else
-                {
-                    SetVimeoVideoFromId();
-                }
 
-                publisher.PublishVideo(encoder.GetVideoFilePath(), vimeoVideoId);
+                publisher.PublishVideo(encoder.GetVideoFilePath(), currentVideo.id);
             }
             else
             {

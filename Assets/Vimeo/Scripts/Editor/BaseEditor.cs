@@ -23,37 +23,20 @@ namespace Vimeo
                 else {
                     fetcher = settings.gameObject.AddComponent<VimeoFetcher>();
                 }
-            }
-
-            fetcher.OnFetchComplete += DestroyFetcher;
-            fetcher.OnFetchError += DestroyFetcher;
-            fetcher.Init(settings);
-        }
-
-        private void DestroyFetcher(string response)
-        {
-            fetcher.OnFetchComplete -= DestroyFetcher;
-            fetcher.OnFetchError -= DestroyFetcher;
-
-            var settings = target as VimeoSettings;
-#if UNITY_EDITOR
-            if (!EditorApplication.isPlaying)
-#endif
-            {
-                DestroyImmediate(settings.gameObject.GetComponent<VimeoFetcher>());
+                fetcher.hideFlags = HideFlags.HideInInspector;
             }
         }
 
         private void FetchFolders()
         {
             InitFetcher();
-            fetcher.FetchFolders();
+            fetcher.GetFolders();
         }
 
-        private void GetVideosInFolder(VimeoFolder currentFolder)
+        private void GetVideosInFolder()
         {
             InitFetcher();
-            fetcher.GetVideosInFolder(currentFolder);
+            fetcher.GetVideosInFolder();
         }
 
         private void GetRecentVideos()
@@ -70,7 +53,34 @@ namespace Vimeo
             }
         }
 
-        protected bool GUISelectFolder()
+        protected bool GUISelectFolderType()
+        {
+            var settings = target as VimeoSettings;
+
+            VimeoFolder.Collection cur_colType = settings.GetCurrentFolderType();
+            VimeoFolder.Collection new_colType = (VimeoFolder.Collection)EditorGUILayout.EnumPopup("Folder type:", cur_colType);
+
+            if (new_colType != cur_colType)
+            {
+                settings.currentFolderType = new_colType;
+                FetchFolders();
+                return true;
+            }
+
+            return false;
+        }
+
+        public static string ConvertSlashToUnicodeSlash(string text_)
+        {
+            return text_.Replace('/', '\u2215');
+        }
+
+        public static string ConvertUnicodeSlashToSlash(string text_)
+        {
+            return text_.Replace('\u2215', '/');
+        }
+
+        protected bool GUISelectFolder(bool refreshFolders = false)
         {
             var so = serializedObject;
             var settings = target as VimeoSettings;
@@ -80,18 +90,23 @@ namespace Vimeo
             bool folderChanged = false;
 
             int cur_index = settings.GetCurrentFolderIndex();
-            int new_index = EditorGUILayout.Popup("Project", cur_index, settings.vimeoFolders.Select(folder => folder.name).ToArray()); 
+            int new_index = EditorGUILayout.Popup(settings.currentFolderType.ToString(), cur_index, 
+                settings.vimeoFolders.Select(folder => ConvertSlashToUnicodeSlash(folder.name)).ToArray()); 
 
             if (new_index != cur_index) {
                 folderChanged = true;
                 settings.currentFolder = settings.vimeoFolders[new_index];
+                settings.vimeoVideos.Clear();
+                settings.vimeoVideos.Add(new VimeoVideo("---- Refresh for full list ----", null));
             }
 
             if (settings is RecorderSettings && GUILayout.Button("+", GUILayout.Width(25))) {
-                Application.OpenURL("https://vimeo.com/manage/folders");
+                Application.OpenURL("https://vimeo.com/manage/" + VimeoFolder.CollectionTag[(int)settings.currentFolderType]);
             }
 
-            if (GUILayout.Button("↺", GUILayout.Width(25)) || (settings.vimeoFolders.Count == 0 && settings.GetComponent<VimeoFetcher>() == null)) { // Refresh folders
+            if (GUILayout.Button("↺", GUILayout.Width(25)) ||
+                refreshFolders ||
+                (settings.vimeoFolders.Count == 0 && settings.GetComponent<VimeoFetcher>() == null)) { // Refresh folders
                 FetchFolders();
             }
 
@@ -114,7 +129,6 @@ namespace Vimeo
 
                 if (new_video_index != cur_video_index) {
                     settings.currentVideo = settings.vimeoVideos[new_video_index];
-                    settings.vimeoVideoId = new_video_index > 0 ? settings.currentVideo.id.ToString() : null;
                     if (settings is RecorderSettings)
                     {
                         var recorder = settings as RecorderSettings;
@@ -143,7 +157,7 @@ namespace Vimeo
             }
             else if (settings.currentFolder.id > 0)
             {
-                GetVideosInFolder(settings.currentFolder);
+                GetVideosInFolder();
             }
         }
 
