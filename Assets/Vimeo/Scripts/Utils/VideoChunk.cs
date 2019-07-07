@@ -96,7 +96,7 @@ namespace Vimeo
             }
         }
 
-        private int maxRetries = 3;
+        private int maxRetries = -1;
         private int m_totalRetries = 0;
         public int totalRetries
         {
@@ -157,7 +157,7 @@ namespace Vimeo
 
         public void UploadError(string msg)
         {
-            if (m_totalRetries >= maxRetries) {
+            if (maxRetries >= 0 && m_totalRetries >= maxRetries) {
                 m_isUploading = false;
                 Debug.LogError("[VideoChunk] " + msg);
 
