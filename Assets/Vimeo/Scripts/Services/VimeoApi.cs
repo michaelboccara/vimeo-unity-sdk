@@ -179,6 +179,17 @@ namespace Vimeo
             }
         }
 
+        public IEnumerator SendVideoComment(VimeoVideo video, string comment)
+        {
+            // Reset the form
+            ResetForm();
+            form.AddField("text", comment);
+
+            yield return Post(API_URL + "/videos/" + video.id + "/comments");
+
+            ResetForm();
+        }
+
         public IEnumerator TusUploadNew(long fileByteCount)
         {
             string tusResourceRequestBody = "{ \"upload\": { \"approach\": \"tus\", \"size\": \"" + fileByteCount.ToString() + "\" } }";
@@ -216,6 +227,20 @@ namespace Vimeo
                     yield return VimeoApi.SendRequest(request);
                     ResponseHandler(request);
                 }
+            }
+        }
+
+        public IEnumerator Post(string url)
+        {
+            using (UnityWebRequest request = UnityWebRequest.Post(url, form))
+            {
+                PrepareHeaders(request);
+                request.SetRequestHeader("X-HTTP-Method-Override", "POST");
+                yield return VimeoApi.SendRequest(request);
+
+                // Reset the form
+                ResetForm();
+                ResponseHandler(request);
             }
         }
 
