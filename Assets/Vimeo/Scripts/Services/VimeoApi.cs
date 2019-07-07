@@ -218,11 +218,24 @@ namespace Vimeo
             }
         }
 
-        IEnumerator Put(string api_path)
+        public IEnumerator Put(string api_path)
         {
             if (token != null) {
                 byte[] data = new byte[] { 0x00 };
                 using (UnityWebRequest request = UnityWebRequest.Put(API_URL + api_path, data)) {
+                    PrepareHeaders(request);
+                    yield return VimeoApi.SendRequest(request);
+                    ResponseHandler(request);
+                }
+            }
+        }
+
+        public IEnumerator Put(string api_path, string body)
+        {
+            if (token != null)
+            {
+                using (UnityWebRequest request = UnityWebRequest.Put(API_URL + api_path, body))
+                {
                     PrepareHeaders(request);
                     yield return VimeoApi.SendRequest(request);
                     ResponseHandler(request);
