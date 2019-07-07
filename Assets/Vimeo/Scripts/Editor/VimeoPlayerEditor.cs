@@ -89,7 +89,9 @@ namespace Vimeo
 #else
                 player.videoPlayerType = VideoPlayerType.UnityPlayer;
 #endif
-                bool updated = GUISelectFolder();
+                bool updated;
+                updated = GUISelectFolderType();
+                updated = GUISelectFolder(updated);
                 GUISelectVideo(updated);
 
                 EditorGUILayout.PropertyField(so.FindProperty("selectedResolution"), new GUIContent("Resolution"));

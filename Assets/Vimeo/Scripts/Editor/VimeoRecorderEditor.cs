@@ -78,7 +78,9 @@ namespace Vimeo.Recorder
 
                     EditorGUILayout.PropertyField(so.FindProperty("description"));
 
-                    bool updated = GUISelectFolder();
+                    bool updated;
+                    updated = GUISelectFolderType();
+                    updated = GUISelectFolder(updated);
 
                     EditorGUILayout.PropertyField(so.FindProperty("replaceExisting"));
 

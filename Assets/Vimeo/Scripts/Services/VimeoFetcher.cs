@@ -35,7 +35,7 @@ namespace Vimeo
             InitAPI();
             settings.vimeoFolders.Clear();
             settings.vimeoFolders.Add(
-                new VimeoFolder("Loading...", null)
+                new VimeoFolder("Loading...", null, VimeoFolder.Collection.Undefined)
             );
 
             api.OnRequestComplete += GetFoldersComplete;
@@ -163,6 +163,7 @@ namespace Vimeo
         {
             var settings = target as VimeoSettings;
             settings.vimeoFolders.Clear();
+            settings.currentFolder = null;
 
             api.OnRequestComplete -= GetFoldersComplete;
 
@@ -178,34 +179,40 @@ namespace Vimeo
 
             string folder_prefix = "";
 
+            string currentFolderType_LowerCase = settings.currentFolderType.ToString().ToLower();
+
             if (IsSelectExisting(settings))
             {
-                var player = target as VimeoSettings;
-                player.vimeoFolders.Add(new VimeoFolder("---- Find a video ----", null));
-                player.vimeoFolders.Add(new VimeoFolder("Get video by ID or URL", "custom"));
-                player.vimeoFolders.Add(new VimeoFolder("Most recent videos", "recent"));
+                target.vimeoFolders.Add(new VimeoFolder("---- Select a folder ----", null, VimeoFolder.Collection.Undefined));
+                target.vimeoFolders.Add(new VimeoFolder("Get video by ID or URL", "custom", VimeoFolder.Collection.Undefined));
+                target.vimeoFolders.Add(new VimeoFolder("Most recent videos", "recent", VimeoFolder.Collection.Undefined));
 
-                if (player.currentFolder == null || !player.currentFolder.IsValid())
+                if (target.currentFolder == null || !target.currentFolder.IsValid())
                 {
-                    if (player.vimeoVideoId != null && player.vimeoVideoId != "")
+                    if (target.currentVideo != null && target.currentVideo.id > 0)
                     {
-                        player.currentFolder = player.vimeoFolders[1];
+                        target.currentFolder = target.vimeoFolders[1];
                     }
                     else
                     {
-                        player.currentFolder = player.vimeoFolders[0];
+                        target.currentFolder = target.vimeoFolders[0];
                     }
                 }
-                folder_prefix = "Projects / ";
+
+                folder_prefix = target.currentFolderType.ToString() + " / ";
+            }
+            else if (folderData.Count == 0)
+            {
+                settings.vimeoFolders.Add(new VimeoFolder("No " + currentFolderType_LowerCase, null, VimeoFolder.Collection.Undefined));
             }
             else
             {
-                settings.vimeoFolders.Add(new VimeoFolder("No project", null));
+                settings.vimeoFolders.Add(new VimeoFolder("---- Select a " + currentFolderType_LowerCase + " ----", null, VimeoFolder.Collection.Undefined));
             }
 
             for (int i = 0; i < folderData.Count; i++)
             {
-                VimeoFolder folder = new VimeoFolder(folder_prefix + folderData[i]["name"], folderData[i]["uri"]);
+                VimeoFolder folder = new VimeoFolder(folder_prefix + folderData[i]["name"], folderData[i]["uri"], target.currentFolderType);
                 settings.vimeoFolders.Add(folder);
             }
 

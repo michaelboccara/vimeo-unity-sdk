@@ -6,12 +6,33 @@ namespace Vimeo
     [System.Serializable]
     public class VimeoFolder : IComparable<VimeoFolder>
     {
+        public enum Collection
+        {
+            Undefined = 0,
+            Project,
+            Showcase,
+            Portfolio,
+            Channel,
+            _Count
+        }
+
+        public static readonly string[] CollectionTag =
+        {
+            null,
+            "folders",
+            "albums",
+            "portfolios",
+            "channels"
+        };
+
+        public Collection collectionType;
         public string name;
         public string uri;
         public int id;
 
-        public VimeoFolder(string _name, string _uri)
+        public VimeoFolder(string _name, string _uri, Collection _collectionTag)
         {
+            collectionType = _collectionTag;
             name = _name;
             uri = _uri;
 

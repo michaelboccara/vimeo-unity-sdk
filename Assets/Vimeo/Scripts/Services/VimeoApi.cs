@@ -63,15 +63,18 @@ namespace Vimeo
             StartCoroutine("Request", "/videos/" + video_id + "?fields=" + fields);
         }
 
-        public void GetUserFolders()
+        public void GetUserFolders(VimeoFolder.Collection collectionType)
         {
-            StartCoroutine("Request", "/me/folders?fields=name,uri");
+            string collectionTag = VimeoFolder.CollectionTag[(int)collectionType];
+
+            StartCoroutine("Request", "/me/" + collectionTag  + "? fields=name,uri");
         }
 
         public void AddVideoToFolder(VimeoVideo video, VimeoFolder folder)
         {
             if (folder.id > 0 && video.uri != null) {
-                IEnumerator coroutine = Put("/me/folders/" + folder.id + "/videos?uris=" + video.uri);
+                string folderCollectionTag = VimeoFolder.CollectionTag[(int)folder.collectionType];
+                IEnumerator coroutine = Put("/me/" + folderCollectionTag + "/" + folder.id + "/videos?uris=" + video.uri);
                 StartCoroutine(coroutine);
             }
         }
@@ -82,10 +85,11 @@ namespace Vimeo
             //StartCoroutine("Request", "/me/videos?fields=" + fields + "&direction=" + direction + "&page=" + page + "&per_page=" + per_page + "&sort=" + sort);
         }
 
-        public void GetVideosInFolder(VimeoFolder folder, string fields = "name,uri", int per_page = 100, string direction = "desc", string sort = "alphabetical")
+        public void GetVideosInFolder(VimeoFolder folder,string fields = "name,uri", int per_page = 100, string direction = "desc", string sort = "alphabetical")
         {
-            StartCoroutine(PagedRequest(per_page, "/me/folders/" + folder.id + "/videos?fields=" + fields + "&direction=" + direction + "&sort=" + sort));
-            //StartCoroutine("Request", "/me/folders/" + folder.id + "/videos?fields=" + fields + "&direction=" + direction + "&page=" + page + "&per_page=" + per_page + "&sort=" + sort);
+            string folderCollectionTag = VimeoFolder.CollectionTag[(int)folder.collectionType];
+            StartCoroutine(PagedRequest(per_page, "/me/" + folderCollectionTag + "/" + folder.id + "/videos?fields=" + fields + "&direction=" + direction + "&sort=" + sort));
+            //StartCoroutine("Request", "/me/" + folderCollectionTag + "/" + folder.id + "/videos?fields=" + fields + "&direction=" + direction + "&page=" + page + "&per_page=" + per_page + "&sort=" + sort);
         }
 
         public void SetVideoViewPrivacy(PrivacyModeDisplay mode)
@@ -318,9 +322,9 @@ namespace Vimeo
                             break;
                         }
                         else
-                    {
-                        SendError(request.url + " - " + request.downloadHandler.text, request.downloadHandler.text);
-                    }
+                        {
+                            SendError(request.url + " - " + request.downloadHandler.text, request.downloadHandler.text);
+                        }
                     }
                     yield break;
                 }
@@ -365,7 +369,7 @@ namespace Vimeo
             r.SetRequestHeader("Content-Type", "application/json");
             PrepareHeaders(r, withAuthorization, apiVersion);
         }
-        
+
         private void PrepareHeaders(UnityWebRequest r, bool withAuthorization = true, string apiVersion = "3.4")
         {
             r.chunkedTransfer = false;
