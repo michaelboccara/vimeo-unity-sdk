@@ -48,12 +48,14 @@ namespace Vimeo
         [HideInInspector]
         public string token;
         public static string API_URL = "https://api.vimeo.com";
-        private WWWForm form;
+
+        private WWWForm _form;
+        private void ResetForm() { _form = new WWWForm(); }
+        private WWWForm form { get { if (_form == null) _form = new WWWForm(); return _form; } }
 
         public void Start()
         {
             this.hideFlags = HideFlags.HideInInspector;
-            form = new WWWForm();
         }
 
         public void GetVideoFileUrlByVimeoId(int video_id, string fields = "name,uri,duration,width,height,spatial,play,files,description")
@@ -172,8 +174,7 @@ namespace Vimeo
                 request.SetRequestHeader("X-HTTP-Method-Override", "PATCH");
                 yield return VimeoApi.SendRequest(request);
 
-                // Reset the form
-                form = new WWWForm();
+                ResetForm();
                 ResponseHandler(request);
             }
         }
