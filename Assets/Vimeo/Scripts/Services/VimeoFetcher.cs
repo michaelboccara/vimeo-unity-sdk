@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿using System.Collections;
+#if UNITY_EDITOR
 using UnityEditor;
 #endif
 using UnityEngine;
@@ -8,9 +9,10 @@ using Vimeo.SimpleJSON;
 
 namespace Vimeo
 {
+    [RequireComponent(typeof(VimeoSettings))]
     public class VimeoFetcher : MonoBehaviour
     {
-        VimeoSettings target;
+        internal VimeoSettings target { get { return GetComponent<VimeoSettings>(); } }
         VimeoApi api;
 
         public delegate void FetchAction(string response);
@@ -22,12 +24,16 @@ namespace Vimeo
             this.hideFlags = HideFlags.HideInInspector;
         }
 
-        public void Init(VimeoSettings _settings)
+        internal IEnumerator FetchFolders()
         {
-            target = _settings;
+            InitAPI();
+            yield return null; // wait a frame to call VimeoApi.Start
+            GetFolders();
+            while (api != null)
+                yield return null;
         }
 
-        public void FetchFolders()
+        public void GetFolders()
         {
             var settings = target as VimeoSettings;
             if (!settings.Authenticated()) return;
@@ -40,10 +46,19 @@ namespace Vimeo
 
             api.OnRequestComplete += GetFoldersComplete;
             api.OnError += OnRequestError;
-            api.GetUserFolders();
+            api.GetUserFolders(settings.currentFolderType);
         }
 
-        public void GetVideosInFolder(VimeoFolder folder)
+        internal IEnumerator FetchVideosInFolder()
+        {
+            InitAPI();
+            yield return null; // wait a frame to call VimeoApi.Start
+            GetVideosInFolder();
+            while (api != null)
+                yield return null;
+        }
+
+        public void GetVideosInFolder()
         {
             var settings = target as VimeoSettings;
             if (!settings.Authenticated()) return;
@@ -57,7 +72,16 @@ namespace Vimeo
             api.OnRequestComplete += GetVideosComplete;
             api.OnError += OnRequestError;
 
-            api.GetVideosInFolder(folder, "name,uri,description"); // conserve description
+            api.GetVideosInFolder(settings.currentFolder, "name,uri,description"); // conserve description
+        }
+
+        internal IEnumerator FetchRecentVideos()
+        {
+            InitAPI();
+            yield return null; // wait a frame to call VimeoApi.Start
+            GetRecentVideos();
+            while (api != null)
+                yield return null;
         }
 
         public void GetRecentVideos()
@@ -109,12 +133,8 @@ namespace Vimeo
             api.OnRequestComplete -= GetVideosComplete;
             api.OnError -= OnRequestError;
 
-#if UNITY_EDITOR
-            if (!EditorApplication.isPlaying)
-#endif
-            {
-                DestroyImmediate(settings.gameObject.GetComponent<VimeoApi>());
-            }
+            Destroy(api);
+            api = null;
 
             var json = JSONNode.Parse(response);
             JSONNode videoData = json["data"];
@@ -143,12 +163,10 @@ namespace Vimeo
         private void OnRequestError(string error)
         {
             var settings = target as VimeoSettings;
-#if UNITY_EDITOR
-            if (!EditorApplication.isPlaying)
-#endif
-            {
-                DestroyImmediate(settings.gameObject.GetComponent<VimeoApi>());
-            }
+
+            Destroy(api);
+            api = null;
+
             settings.signInError = true;
 
             if (OnFetchError != null)

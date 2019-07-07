@@ -23,37 +23,20 @@ namespace Vimeo
                 else {
                     fetcher = settings.gameObject.AddComponent<VimeoFetcher>();
                 }
-            }
-
-            fetcher.OnFetchComplete += DestroyFetcher;
-            fetcher.OnFetchError += DestroyFetcher;
-            fetcher.Init(settings);
-        }
-
-        private void DestroyFetcher(string response)
-        {
-            fetcher.OnFetchComplete -= DestroyFetcher;
-            fetcher.OnFetchError -= DestroyFetcher;
-
-            var settings = target as VimeoSettings;
-#if UNITY_EDITOR
-            if (!EditorApplication.isPlaying)
-#endif
-            {
-                DestroyImmediate(settings.gameObject.GetComponent<VimeoFetcher>());
+                fetcher.hideFlags = HideFlags.HideInInspector;
             }
         }
 
         private void FetchFolders()
         {
             InitFetcher();
-            fetcher.FetchFolders();
+            fetcher.GetFolders();
         }
 
-        private void GetVideosInFolder(VimeoFolder currentFolder)
+        private void GetVideosInFolder()
         {
             InitFetcher();
-            fetcher.GetVideosInFolder(currentFolder);
+            fetcher.GetVideosInFolder();
         }
 
         private void GetRecentVideos()
@@ -174,7 +157,7 @@ namespace Vimeo
             }
             else if (settings.currentFolder.id > 0)
             {
-                GetVideosInFolder(settings.currentFolder);
+                GetVideosInFolder();
             }
         }
 
