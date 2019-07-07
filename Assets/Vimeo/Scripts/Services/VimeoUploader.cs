@@ -120,13 +120,21 @@ namespace Vimeo
             }
         }
 
-        public void Upload(string _file, string vimeoId = null)
+        public void Upload(string _file, int vimeoId = 0)
         {
             m_file = _file;
             m_fileInfo = new FileInfo(m_file);
 
+            if (m_fileInfo.Length <= 0)
+            {
+                string error = "Can't upload empty file to Vimeo: " + _file;
+                Debug.LogError(error);
+                OnUploadError(error);
+                return;
+            }
+
             OnRequestComplete += RequestComplete;
-            if (!string.IsNullOrEmpty(vimeoId))
+            if (vimeoId > 0)
             {
                 StartCoroutine(TusUploadReplace(vimeoId, Path.GetFileName(m_file), m_fileInfo.Length));
             }

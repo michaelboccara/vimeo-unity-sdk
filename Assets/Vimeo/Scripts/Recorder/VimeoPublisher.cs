@@ -104,7 +104,7 @@ namespace Vimeo.Recorder
             return null;
         }
 
-        public void PublishVideo(string filename, string vimeoId = null)
+        public void PublishVideo(string filename, int vimeoId = 0)
         {
             if (System.IO.File.Exists(filename)) {
                 Debug.Log("[VimeoRecorder] Uploading to Vimeo");

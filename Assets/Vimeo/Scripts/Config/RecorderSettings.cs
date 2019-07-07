@@ -142,7 +142,6 @@ namespace Vimeo.Recorder
                     if (video.GetVideoName() == videoName)
                     {
                         currentVideo = video;
-                        vimeoVideoId = video.id.ToString();
                         description = video.description;
                         break;
                     }
@@ -150,14 +149,14 @@ namespace Vimeo.Recorder
             }
         }
 
-        public void SetVimeoVideoFromId()
+        public void SetVimeoVideoFromId(int vimeoVideoId)
         {
-            if (!string.IsNullOrEmpty(vimeoVideoId))
+            if (vimeoVideoId > 0)
             {
                 for (int i = 0; i < vimeoVideos.Count; i++)
                 {
                     var video = vimeoVideos[i];
-                    if (video.id.ToString() == vimeoVideoId)
+                    if (video.id == vimeoVideoId)
                     {
                         currentVideo = video;
                         if (string.IsNullOrEmpty(videoName))

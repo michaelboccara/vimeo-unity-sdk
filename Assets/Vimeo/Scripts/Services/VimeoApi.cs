@@ -191,7 +191,7 @@ namespace Vimeo
             }
         }
 
-        public IEnumerator TusUploadReplace(string videoId, string file_name, long fileByteCount)
+        public IEnumerator TusUploadReplace(int videoId, string file_name, long fileByteCount)
         {
             string tusResourceRequestBody = "{ \"file_name\": \"" + file_name + "\", \"upload\": { \"status\": \"in_progress\", \"size\": \"" + fileByteCount.ToString() + "\", \"approach\": \"tus\" } }";
 

@@ -83,6 +83,8 @@ namespace Vimeo.Recorder
         {
             isRecording = false;
             isUploading = false;
+            if (encoder == null || publisher == null)
+                return;
             //encoder.DeleteVideoFile();
             Destroy(publisher);
             encoder.CancelRecording();
@@ -149,19 +151,15 @@ namespace Vimeo.Recorder
                     Debug.LogError("Videos fetching is not complete before replacing publishing");
                 }
 
-                if (string.IsNullOrEmpty(vimeoVideoId))
+                if (currentVideo.id <= 0)
                 {
                     if (!string.IsNullOrEmpty(videoName))
                     {
                         SetVimeoIdFromName();
                     }
                 }
-                else
-                {
-                    SetVimeoVideoFromId();
-                }
 
-                publisher.PublishVideo(encoder.GetVideoFilePath(), vimeoVideoId);
+                publisher.PublishVideo(encoder.GetVideoFilePath(), currentVideo.id);
             }
             else
             {

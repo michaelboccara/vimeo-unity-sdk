@@ -114,7 +114,6 @@ namespace Vimeo
 
                 if (new_video_index != cur_video_index) {
                     settings.currentVideo = settings.vimeoVideos[new_video_index];
-                    settings.vimeoVideoId = new_video_index > 0 ? settings.currentVideo.id.ToString() : null;
                     if (settings is RecorderSettings)
                     {
                         var recorder = settings as RecorderSettings;
