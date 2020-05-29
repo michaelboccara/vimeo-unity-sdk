@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Vimeo;
 using Vimeo.SimpleJSON;
+using UnityEngine.Networking;
 
 namespace Vimeo.Player
 {
@@ -39,6 +40,8 @@ namespace Vimeo.Player
         public bool loadingVideoMetadata = false;
         private bool playVideoAfterLoad = false;
         private bool videoControllerReady = false;
+
+        public string m_file_url;
 
         public void Start()
         {
@@ -396,9 +399,22 @@ namespace Vimeo.Player
                 if (OnVideoMetadataLoad != null) {
                     OnVideoMetadataLoad();
                 }
-            } 
-            else {
+            } else {
                 Debug.LogError("Video could not be found");
+            }
+        }
+
+        public IEnumerator Unfurl(string url)
+        {
+            using (UnityWebRequest www = UnityWebRequest.Get(url)) {
+                yield return VimeoApi.SendRequest(www);
+
+
+                if (!VimeoApi.IsNetworkError(www)) {
+                    m_file_url = www.url;
+                } else {
+                    m_file_url = url;
+            } 
             }
         }
         

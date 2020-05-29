@@ -18,15 +18,15 @@ public class VimeoPlayerTest : TestConfig
         playerObj = new GameObject();
         player = playerObj.AddComponent<VimeoPlayer>();
         player.videoScreen = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        player.vimeoVideoId = INVALID_VIMEO_VIDEO_ID;
+        player.vimeoId = INVALID_VIMEO_VIDEO_ID;
     }
 
     [Test]
     public void SignIn_Works_In_Editor()
     {
         UnityEngine.TestTools.LogAssert.NoUnexpectedReceived();
-        player.SignIn("xxx");
-        Assert.AreEqual(player.GetVimeoToken(), "xxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
+        Assert.AreEqual(player.GetVimeoToken(), VALID_STREAMING_TOKEN);
     }
 
     [Test]
@@ -36,10 +36,10 @@ public class VimeoPlayerTest : TestConfig
 
         player.autoPlay = false;
         player.Start();
-        player.SignIn("xxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
 
         Assert.IsNotNull(player.GetComponent<Vimeo.VimeoApi>());
-        Assert.AreEqual(player.GetComponent<Vimeo.VimeoApi>().token, "xxx");
+        Assert.AreEqual(player.GetComponent<Vimeo.VimeoApi>().token, VALID_STREAMING_TOKEN);
     }
 
     [Test]
@@ -50,7 +50,7 @@ public class VimeoPlayerTest : TestConfig
 
         player.autoPlay = false;
         player.Start();
-        player.SignIn("xxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
 
         Assert.AreEqual(player.autoPlay, false);
         Assert.AreEqual(player.IsVideoMetadataLoaded(), false);
@@ -66,10 +66,10 @@ public class VimeoPlayerTest : TestConfig
         UnityEngine.TestTools.LogAssert.Expect(LogType.Error, new Regex("Can't load video"));
 
         player.autoPlay = false;
-        player.vimeoVideoId = null;
+        player.vimeoId = INVALID_VIMEO_VIDEO_ID;
 
         player.Start();
-        player.SignIn("xxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
         player.Play();
     }
 
@@ -79,33 +79,33 @@ public class VimeoPlayerTest : TestConfig
         UnityEngine.TestTools.LogAssert.Expect(LogType.Error, new Regex("Can't load video"));
 
         player.autoPlay = false;
-        player.vimeoVideoId = "";
+        player.vimeoId = INVALID_VIMEO_VIDEO_ID;
 
         player.Start();
-        player.SignIn("xxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
         player.Play();
     }
 
     [Test]
     public void PlayVideo_Sets_vimeoVideoId_With_String()
     {
-        player.SignIn("xxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
         player.Start();
 
-        player.vimeoVideoId = null;
-        player.PlayVideo("1234");
-        Assert.AreEqual(player.vimeoVideoId, "1234");
+        player.vimeoId = INVALID_VIMEO_VIDEO_ID;
+        player.PlayVideo(VALID_VIMEO_VIDEO_ID);
+        Assert.AreEqual(player.vimeoId, VALID_VIMEO_VIDEO_ID);
     }
 
     [Test]
     public void PlayVideo_Sets_vimeoVideoId_With_Int()
     {
-        player.SignIn("xxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
         player.Start();
 
-        player.vimeoVideoId = null;
-        player.PlayVideo(1234);
-        Assert.AreEqual(player.vimeoVideoId, "1234");
+        player.vimeoId = INVALID_VIMEO_VIDEO_ID;
+        player.PlayVideo(VALID_VIMEO_VIDEO_ID);
+        Assert.AreEqual(player.vimeoId, VALID_VIMEO_VIDEO_ID);
     }
 
     [Test]
@@ -115,7 +115,7 @@ public class VimeoPlayerTest : TestConfig
 
         player.autoPlay = true;
         player.Start();
-        player.SignIn("xxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
     }
 
     [TearDown]
@@ -139,37 +139,37 @@ public class VimeoPlayerTest : TestConfig
             playerObj = new GameObject();
             player = playerObj.AddComponent<VimeoPlayer>();
             player.videoScreen = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            player.vimeoVideoId = INVALID_VIMEO_VIDEO_ID;
-            player.SignIn("xxx");
+            player.vimeoId = INVALID_VIMEO_VIDEO_ID;
+            player.SignIn(VALID_STREAMING_TOKEN);
             player.Start();
         }
 
         [Test]
         public void Load_Video_Parses_Video_Id()
         {
-            player.LoadVideo("1234");
-            Assert.AreEqual(player.vimeoVideoId, "1234");
+            player.LoadVideo(VALID_VIMEO_VIDEO_ID);
+            Assert.AreEqual(player.vimeoId, VALID_VIMEO_VIDEO_ID);
         }
 
         [Test]
         public void Load_Video_Parses_Channel_Video()
         {
             player.LoadVideo("vimeo.com/channels/360vr/3252329");
-            Assert.AreEqual(player.vimeoVideoId, "3252329");
+            Assert.AreEqual(player.vimeoId, 3252329);
         }
 
         [Test]
         public void Load_Video_Parses_Channel_Video_With_Http()
         {
             player.LoadVideo("https://vimeo.com/channels/staffpicks/249752354");
-            Assert.AreEqual(player.vimeoVideoId, "249752354");
+            Assert.AreEqual(player.vimeoId, 249752354);
         }
 
         [Test]
         public void Load_Video_Parses_Private_Video()
         {
             player.LoadVideo("vimeo.com/2304923/4434k3k3j3k3");
-            Assert.AreEqual(player.vimeoVideoId, "2304923");
+            Assert.AreEqual(player.vimeoId, 2304923);
         }
 
         [Test]

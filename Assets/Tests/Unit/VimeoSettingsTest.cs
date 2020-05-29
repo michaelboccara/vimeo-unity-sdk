@@ -29,9 +29,9 @@ public class VimeoSettingsTest : TestConfig
     [Test]
     public void SignIn_Doesnt_Save_Token_In_Scene()
     {
-        player.SignIn("xxxxxxLOLxxxxxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
         Assert.AreEqual(player.vimeoToken, null);
-        Assert.AreEqual(player.GetVimeoToken(), "xxxxxxLOLxxxxxx");
+        Assert.AreEqual(player.GetVimeoToken(), VALID_STREAMING_TOKEN);
         Assert.AreEqual(player.vimeoSignIn, true);
     }
 

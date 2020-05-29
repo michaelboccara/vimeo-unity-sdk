@@ -75,7 +75,7 @@ public class VimeoPlayerPlayTest : TestConfig
     public IEnumerator Cant_Stream_Video_With_Invalid_Token()
     {
         player.OnLoadError += EventTriggered;
-        player.SignIn("xxxxxxxxxxxxxxx");
+        player.SignIn(VALID_STREAMING_TOKEN);
         player.PlayVideo(VALID_VIMEO_VIDEO_ID);
 
         UnityEngine.TestTools.LogAssert.Expect(LogType.Error, new Regex("401"));

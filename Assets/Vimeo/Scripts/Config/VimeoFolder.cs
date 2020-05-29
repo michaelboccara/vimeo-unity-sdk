@@ -30,7 +30,7 @@ namespace Vimeo
         public string uri;
         public int id;
 
-        public VimeoFolder(string _name, string _uri, Collection _collectionTag)
+        public VimeoFolder(string _name, string _uri, Collection _collectionTag = Collection.Project)
         {
             collectionType = _collectionTag;
             name = _name;
