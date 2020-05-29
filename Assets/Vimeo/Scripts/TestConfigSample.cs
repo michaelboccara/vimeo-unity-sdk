@@ -7,11 +7,11 @@ using System.Collections;
 // and rename class to `TestConfig`
 public class TestConfigSample
 {
-    public const string INVALID_VIMEO_VIDEO_ID = "1234";
-    public const string VALID_VIMEO_VIDEO_ID = "1234";
-    public const string VALID_VIMEO_VOLUMETRIC_VIDEO_ID = "1234";
+    public const int INVALID_VIMEO_VIDEO_ID = 1234;
+    public const int VALID_VIMEO_VIDEO_ID = 1234;
+    public const int VALID_VIMEO_VOLUMETRIC_VIDEO_ID = 1234;
     public const string VALID_STREAMING_TOKEN = "xxx";
-    public const string VALID_PRODUCTION_VIMEO_VIDEO_ID = "1234";
+    public const int VALID_PRODUCTION_VIMEO_VIDEO_ID = 1234;
     public const string VALID_PRODUCTION_STREAMING_TOKEN = "xxx"; // For custom Vimeo developer apps
     public const string VALID_RECORDING_TOKEN = "xxx";
     public const string TEST_PROJECT_FOLDER = "/users/xxx/projects/xxx";
