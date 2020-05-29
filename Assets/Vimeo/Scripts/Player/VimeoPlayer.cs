@@ -6,13 +6,12 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Vimeo;
 using Vimeo.SimpleJSON;
-using UnityEngine.Networking;
 
 namespace Vimeo.Player
 {
     [AddComponentMenu("Video/Vimeo Player")]
     [HelpURL("https://github.com/vimeo/vimeo-unity-sdk")]
-    public class VimeoPlayer : PlayerSettings
+    public class VimeoPlayer : PlayerSettings 
     {
         public delegate void VimeoEvent();
         public event VimeoEvent OnStart;
@@ -41,16 +40,14 @@ namespace Vimeo.Player
         private bool playVideoAfterLoad = false;
         private bool videoControllerReady = false;
 
-        public string m_file_url;
-
         public void Start()
         {
-            Application.runInBackground = true;
+            Application.runInBackground = true; 
 
             if (api == null) {
                 api = gameObject.AddComponent<VimeoApi>();
                 api.token = GetVimeoToken();
-                api.OnError += ApiError;
+                api.OnError  += ApiError;
             }
 
             SetupVideoController();
@@ -64,7 +61,7 @@ namespace Vimeo.Player
             }
         }
 
-        public override void SignIn(string _token)
+        public override void SignIn(string _token) 
         {
             base.SignIn(_token);
 
@@ -85,7 +82,7 @@ namespace Vimeo.Player
 
         internal static int GetVimeoIdFromURL(string vimeo_url)
         {
-                Match match = Regex.Match(vimeo_url, "(vimeo.com)?(/channels/[^/]+)?/?([0-9]+)");
+            Match match = Regex.Match(vimeo_url, "(vimeo.com)?(/channels/[^/]+)?/?([0-9]+)");
 
             if (match.Success)
             {
@@ -126,10 +123,10 @@ namespace Vimeo.Player
                     controller.videoScreenObject = videoScreen;
 
                     controller.OnVideoStart += VideoStarted;
-                    controller.OnPlay += VideoPlay;
-                    controller.OnPause += VideoPaused;
+                    controller.OnPlay       += VideoPlay;
+                    controller.OnPause      += VideoPaused;
                     controller.OnFrameReady += VideoFrameReady;
-
+                            
                     if (audioSource && audioSource is AudioSource) {
                         if (audioSource != null) {
                             controller.audioSource = audioSource;
@@ -148,7 +145,7 @@ namespace Vimeo.Player
             }
 #endif
         }
-
+        
         public void LoadVideo()
         {
             if (!vimeoSignIn) {
@@ -165,7 +162,7 @@ namespace Vimeo.Player
 
         public bool IsPlaying()
         {
-            if (IsPlayerSetup()) {
+            if (IsPlayerSetup()) { 
                 return controller.videoPlayer.isPlaying;
             } else {
                 return false;
@@ -191,7 +188,7 @@ namespace Vimeo.Player
             }
         }
 
-        public void PlayVideo(string _vimeoUrl)
+        public void PlayVideo(string _vimeoUrl) 
         {
             vimeoId = GetVimeoIdFromURL(_vimeoUrl);
             LoadAndPlayVideo();
@@ -328,8 +325,8 @@ namespace Vimeo.Player
         public string GetTimecode()
         {
             if (controller != null) {
-                float sec = Mathf.Floor((float)controller.videoPlayer.time % 60);
-                float min = Mathf.Floor((float)controller.videoPlayer.time / 60f);
+                float sec = Mathf.Floor ((float)controller.videoPlayer.time % 60);
+                float min = Mathf.Floor ((float)controller.videoPlayer.time / 60f);
 
                 string secZeroPad = sec > 9 ? "" : "0";
                 string minZeroPad = min > 9 ? "" : "0";
@@ -376,10 +373,10 @@ namespace Vimeo.Player
         private void VideoMetadataLoad(string response)
         {
             loadingVideoMetadata = false;
-
+            
             JSONNode json = JSONNode.Parse(response);
             api.OnRequestComplete -= VideoMetadataLoad;
-
+            
             if (json["error"] == null) {
                 if (json["user"] != null && json["user"]["account"].Value == "basic") {
                     Debug.LogError("[VimeoPlayer] You do not have permission to stream videos. You must be a Vimeo Pro or Business customer. https://vimeo.com/upgrade");
@@ -388,7 +385,7 @@ namespace Vimeo.Player
                 if ((json["play"] == null || json["play"]["progressive"] == null) && json["files"] == null) {
                     Debug.LogError("[VimeoPlayer] You do not have permission to access to this video. You must be a Vimeo Pro or Business customer and use videos from your own account. https://vimeo.com/upgrade");
                 }
-
+                
                 vimeoVideo = new VimeoVideo(json);
 
                 if (autoPlay || playVideoAfterLoad) {
@@ -399,25 +396,12 @@ namespace Vimeo.Player
                 if (OnVideoMetadataLoad != null) {
                     OnVideoMetadataLoad();
                 }
-            } else {
+            } 
+            else {
                 Debug.LogError("Video could not be found");
             }
         }
-
-        public IEnumerator Unfurl(string url)
-        {
-            using (UnityWebRequest www = UnityWebRequest.Get(url)) {
-                yield return VimeoApi.SendRequest(www);
-
-
-                if (!VimeoApi.IsNetworkError(www)) {
-                    m_file_url = www.url;
-                } else {
-                    m_file_url = url;
-                }
-            }
-        }
-
+        
         private void ApiError(string response)
         {
             if (OnLoadError != null) {
