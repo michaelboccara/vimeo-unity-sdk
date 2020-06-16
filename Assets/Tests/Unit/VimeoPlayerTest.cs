@@ -18,7 +18,7 @@ public class VimeoPlayerTest : TestConfig
         playerObj = new GameObject();
         player = playerObj.AddComponent<VimeoPlayer>();
         player.videoScreen = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        player.vimeoVideoId = INVALID_VIMEO_VIDEO_ID;
+        player.vimeoVideoId = INVALID_VIMEO_VIDEO_ID.ToString();
     }
 
     [Test]
@@ -139,7 +139,7 @@ public class VimeoPlayerTest : TestConfig
             playerObj = new GameObject();
             player = playerObj.AddComponent<VimeoPlayer>();
             player.videoScreen = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            player.vimeoVideoId = INVALID_VIMEO_VIDEO_ID;
+            player.vimeoVideoId = INVALID_VIMEO_VIDEO_ID.ToString();
             player.SignIn("xxx");
             player.Start();
         }
