@@ -5272,6 +5272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 967548887}
   - component: {fileID: 967548888}
+  - component: {fileID: 967548889}
   m_Layer: 0
   m_Name: VimeoUploader
   m_TagString: Untagged
@@ -5321,46 +5322,14 @@ MonoBehaviour:
   vimeoVideos: []
   currentFolder:
     collectionType: 0
-    name: Test
-    uri: /users/50752847/projects/587151
-    id: 587151
-  vimeoFolders:
-  - collectionType: 0
-    name: No project
+    name: 
     uri: 
     id: 0
+  vimeoFolders:
   - collectionType: 0
-    name: Daily
-    uri: /users/50752847/projects/523457
-    id: 523457
-  - collectionType: 0
-    name: Daily_Fast
-    uri: /users/50752847/projects/801026
-    id: 801026
-  - collectionType: 0
-    name: Daily_Full
-    uri: /users/50752847/projects/816589
-    id: 816589
-  - collectionType: 0
-    name: Daily_Slow
-    uri: /users/50752847/projects/801027
-    id: 801027
-  - collectionType: 0
-    name: EarthCast
-    uri: /users/50752847/projects/832251
-    id: 832251
-  - collectionType: 0
-    name: Earth Day
-    uri: /users/50752847/projects/800186
-    id: 800186
-  - collectionType: 0
-    name: Earth Mix
-    uri: /users/50752847/projects/665355
-    id: 665355
-  - collectionType: 0
-    name: Test
-    uri: /users/50752847/projects/587151
-    id: 587151
+    name: No undefined
+    uri: 
+    id: 0
   currentFolderType: 0
   vimeoToken: 
   buildMode: 0
@@ -5404,6 +5373,18 @@ MonoBehaviour:
   isUploading: 0
   uploadProgress: 0
   uploadStatus: 
+--- !u!114 &967548889
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967548886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8f98731cf74a64b8b42101466d733c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1210478444
 GameObject:
   m_ObjectHideFlags: 0
