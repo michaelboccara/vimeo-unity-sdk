@@ -15,7 +15,7 @@ namespace Vimeo.Recorder
         public delegate void RequestAction(string error_message);
         public event RequestAction OnUploadError;
 
-        [HideInInspector] public VimeoRecorder recorder; // recorder contains all the settings
+        [HideInInspector] public RecorderSettings settings; // settings contains all the settings
 
         private VimeoUploader m_vimeoUploader;
         public VimeoUploader vimeoUploader
@@ -33,13 +33,13 @@ namespace Vimeo.Recorder
             this.hideFlags = HideFlags.HideInInspector;
         }
 
-        public void Init(VimeoRecorder _recorder, int _chunkSize = 1024 * 1024 * 128)
+        public void Init(RecorderSettings _settings, int _chunkSize = 1024 * 1024 * 128)
         {
-            recorder = _recorder;
+            settings = _settings;
 
             if (m_vimeoUploader == null) {
                 m_vimeoUploader = gameObject.AddComponent<VimeoUploader>();
-                m_vimeoUploader.Init(recorder.GetVimeoToken(), _chunkSize);
+                m_vimeoUploader.Init(settings.GetVimeoToken(), _chunkSize);
 
                 m_vimeoUploader.OnUploadProgress += UploadProgress;
                 m_vimeoUploader.OnUploadComplete += UploadComplete;
@@ -59,40 +59,40 @@ namespace Vimeo.Recorder
             video = new VimeoVideo(jsonResponse);
 
 #if UNITY_2018_1_OR_NEWER
-            if (recorder.defaultVideoInput == VideoInputType.Camera360) {
-                m_vimeoUploader.SetVideoSpatialMode("equirectangular", recorder.defaultRenderMode360 == RenderMode360.Stereo ? "top-bottom" : "mono");
+            if (settings.defaultVideoInput == VideoInputType.Camera360) {
+                m_vimeoUploader.SetVideoSpatialMode("equirectangular", settings.defaultRenderMode360 == RenderMode360.Stereo ? "top-bottom" : "mono");
             }
 #endif
 
-            if (string.IsNullOrEmpty(recorder.description))
+            if (string.IsNullOrEmpty(settings.description))
             {
                 m_vimeoUploader.SetVideoDescription("Recorded and uploaded with the Vimeo Unity SDK: https://github.com/vimeo/vimeo-unity-sdk");
             }
             else
             {
-            m_vimeoUploader.SetVideoDescription(recorder.description);
+            m_vimeoUploader.SetVideoDescription(settings.description);
             }
 
-            if (recorder.enableDownloads == false) {
-                m_vimeoUploader.SetVideoDownload(recorder.enableDownloads);
+            if (settings.enableDownloads == false) {
+                m_vimeoUploader.SetVideoDownload(settings.enableDownloads);
             }
-            m_vimeoUploader.SetVideoComments(recorder.commentMode);
-            m_vimeoUploader.SetVideoReviewPage(recorder.enableReviewPage);
-            SetVideoName(recorder.GetVideoName());
+            m_vimeoUploader.SetVideoComments(settings.commentMode);
+            m_vimeoUploader.SetVideoReviewPage(settings.enableReviewPage);
+            SetVideoName(settings.GetVideoName());
 
-            if (recorder.privacyMode == VimeoApi.PrivacyModeDisplay.OnlyPeopleWithAPassword) {
-                m_vimeoUploader.SetVideoPassword(recorder.videoPassword);
+            if (settings.privacyMode == VimeoApi.PrivacyModeDisplay.OnlyPeopleWithAPassword) {
+                m_vimeoUploader.SetVideoPassword(settings.videoPassword);
             }
-            SetVideoPrivacyMode(recorder.privacyMode);
+            SetVideoPrivacyMode(settings.privacyMode);
         }
 
         public string GetVimeoPermalink()
         {
-            if (recorder.videoPermalink != null) {
-                if (recorder.defaultShareLink == LinkType.ReviewPage) {
-                    return recorder.videoReviewPermalink;
+            if (settings.videoPermalink != null) {
+                if (settings.defaultShareLink == LinkType.ReviewPage) {
+                    return settings.videoReviewPermalink;
                 } else {
-                    return recorder.videoPermalink;
+                    return settings.videoPermalink;
                 }
             }
 
@@ -107,7 +107,7 @@ namespace Vimeo.Recorder
         public void PublishVideo(string filename, int vimeoId = 0)
         {
             if (System.IO.File.Exists(filename)) {
-                Debug.Log("[VimeoRecorder] Uploading to Vimeo");
+                Debug.Log("[VimeoPublisher] Uploading to Vimeo");
                 m_vimeoUploader.Upload(filename, vimeoId);
             } else {
                 Debug.LogError("File doesn't exist, try recording it again");
@@ -123,7 +123,7 @@ namespace Vimeo.Recorder
 
         private void UploadComplete(string video_url)
         {
-            if (recorder.openInBrowser == true)
+            if (settings.openInBrowser == true)
             {
                 OpenVideo();
             }
@@ -149,11 +149,11 @@ namespace Vimeo.Recorder
             m_vimeoUploader.OnRequestComplete -= OnVideoUpdated;
 
             JSONNode json = JSONNode.Parse(response);
-            recorder.videoPermalink = json["link"];
-            recorder.videoReviewPermalink = json["review_link"];
+            settings.videoPermalink = json["link"];
+            settings.videoReviewPermalink = json["review_link"];
 
-            if (recorder.currentFolder != null && recorder.currentFolder.uri != null) {
-                m_vimeoUploader.AddVideoToFolder(video, recorder.currentFolder);
+            if (settings.currentFolder != null && settings.currentFolder.uri != null) {
+                m_vimeoUploader.AddVideoToFolder(video, settings.currentFolder);
             }
         }
 
