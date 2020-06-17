@@ -15,7 +15,7 @@ public class VimeoPublisherTest : TestConfig
 
     VimeoPublisher publisher;
 
-    VimeoRecorder recorder;
+    RecorderSettings settings;
 
     VimeoUploader uploader;
 
@@ -24,16 +24,16 @@ public class VimeoPublisherTest : TestConfig
     {
         publisherObj = new GameObject();
 
-        recorder = publisherObj.AddComponent<VimeoRecorder>();
+        settings = publisherObj.AddComponent<RecorderSettings>();
         publisher = publisherObj.AddComponent<VimeoPublisher>();
-        publisher.Init(recorder);
+        publisher.Init(settings);
     }
 
     [Test]
     public void Init_Works()
     {
         Assert.IsNotNull(publisher.vimeoUploader);
-        Assert.IsNotNull(publisher.recorder);
+        Assert.IsNotNull(publisher.settings);
     }
 
     [Test]
