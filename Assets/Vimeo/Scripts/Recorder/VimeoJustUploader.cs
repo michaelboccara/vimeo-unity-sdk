@@ -49,7 +49,7 @@ namespace Vimeo.Recorder
                 publisher.Init(this, m_byteChunkSize);
 
                 publisher.OnUploadProgress += UploadProgress;
-                publisher.OnNetworkError += NetworkError;
+                publisher.OnUploadError += UploadError;
             }
 
             publisher.PublishVideo(filePath);
@@ -70,7 +70,7 @@ namespace Vimeo.Recorder
 
             if (status == "UploadComplete" || status == "UploadError") {
                 publisher.OnUploadProgress -= UploadProgress;
-                publisher.OnNetworkError -= NetworkError;
+                publisher.OnUploadError -= UploadError;
 
                 isUploading = false;
                 Destroy(publisher);
@@ -89,9 +89,20 @@ namespace Vimeo.Recorder
 
         }
 
-        private void NetworkError(string status)
+        private void UploadError(string status)
         {
             Debug.LogError(status);
+            publisher.OnUploadProgress -= UploadProgress;
+            publisher.OnUploadError -= UploadError;
+
+            isUploading = false;
+            //encoder.DeleteVideoFile();
+            Destroy(publisher);
+
+            if (OnUploadError != null)
+            {
+                OnUploadError();
+            }
         }
 
         private void Dispose()
