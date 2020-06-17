@@ -28,7 +28,7 @@ namespace Vimeo.Recorder
 
         VimeoFetcher fetcher;
 
-        private int m_byteChunkSize = 1024 * 1024 * 128;
+        private int m_byteChunkSize = 1024 * 1024 * 8;
         public int byteChunkSize {
             set {
                 m_byteChunkSize = value;
