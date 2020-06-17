@@ -211,7 +211,7 @@ namespace Vimeo.Recorder
                 EditorGUILayout.PropertyField(so.FindProperty("captureLookingGlassRT"), new GUIContent("Capture Hologram"));
 #endif
 
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                 EditorGUILayout.PropertyField(so.FindProperty("encoderType"), new GUIContent("Encoder"));    
 
                 if (recorder.encoderType == Vimeo.Recorder.EncoderType.AVProMovieCapture) {
@@ -264,7 +264,7 @@ namespace Vimeo.Recorder
                 if (recorder.recordMode == RecordMode.Duration) {
                     EditorGUILayout.PropertyField(so.FindProperty("recordDuration"), new GUIContent("Duration (sec)"));
                 }
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                 }
 #endif
 

@@ -66,7 +66,7 @@ public class EncoderManagerTest : TestConfig
         encoder.Init(recorder);
     }
 
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
     [Test]
     public void Init_LookingGlass_AVPro_Movie_Capture_Works()
     {
@@ -98,7 +98,7 @@ public class EncoderManagerTest : TestConfig
         encoder.Init(recorder);
     }
 
-#endif //VIMEO_AVPRO_CAPTURE_SUPPORT
+#endif //XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
 
     [TearDown]
     public void _After()

@@ -7,13 +7,13 @@ using System.Text.RegularExpressions;
 using Vimeo;
 using Vimeo.Recorder;
 
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
 using RenderHeads.Media.AVProMovieCapture;
 #endif
 
 public class AVProMovieCaptureTest : TestConfig
 {
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
 
     GameObject camObj;
     GameObject light;

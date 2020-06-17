@@ -11,9 +11,9 @@ using Vimeo.Recorder;
 using HoloPlay;
 #endif // VIMEO_LOOKING_GLASS_SUPPORT
 
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
 using RenderHeads.Media.AVProMovieCapture;
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
 
 namespace Vimeo.Recorder
 {
@@ -22,9 +22,9 @@ namespace Vimeo.Recorder
         private VimeoRecorder _recorder;
         public bool isRecording = false;
 
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
             private CaptureBase _avproEncoder;
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
 
 #if MEDIA_ENCODER_SUPPORT
         private RecorderController _vimeoEncoder;
@@ -47,9 +47,9 @@ namespace Vimeo.Recorder
                 Debug.LogError("[Vimeo] Recording is only avaialabe in 2017.2 or higher.");
 #endif // MEDIA_ENCODER_SUPPORT
             } else if (_recorder.encoderType == EncoderType.AVProMovieCapture) {
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                 _avproEncoder = r.avproEncoder;
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
             }
 
             EncoderSetup();
@@ -64,9 +64,9 @@ namespace Vimeo.Recorder
                 _vimeoEncoder.BeginRecording();
 #endif // MEDIA_ENCODER_SUPPORT            
             } else {
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                 _avproEncoder.StartCapture();
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT      
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT      
             }
         }
 
@@ -78,7 +78,7 @@ namespace Vimeo.Recorder
                 if (quilt != null) {
                     _recorder.renderTextureTarget = quilt.quiltRT;
 
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                     if (_recorder.encoderType == EncoderType.AVProMovieCapture && _recorder.avproEncoder != null) {
                         RenderHeads.Media.AVProMovieCapture.CaptureFromTexture avproTexture = _recorder.avproEncoder.gameObject.GetComponent<RenderHeads.Media.AVProMovieCapture.CaptureFromTexture>();
                         if (avproTexture != null) {
@@ -88,7 +88,7 @@ namespace Vimeo.Recorder
                             Debug.LogError("[VimeoRecorder] In order to use AVPro and HoloPlay together, you need to use the CaptureFromTexture component.");
                         }
                     }
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                 }
                 else {
                     Debug.LogError("[VimeoRecorer] HoloPlay SDK was not found.");
@@ -126,9 +126,9 @@ namespace Vimeo.Recorder
                 _vimeoEncoder.EndRecording();
 #endif // MEDIA_ENCODER_SUPPORT
             } else {
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                 // _avproEncoder.StartCapture();
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT             
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT             
             }
         }
 
@@ -156,9 +156,9 @@ namespace Vimeo.Recorder
                 return _vimeoEncoder.encodedFilePath;
 #endif // MEDIA_ENCODER_SUPPORT          
             } else if (_recorder.encoderType == EncoderType.AVProMovieCapture) {
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                 return _avproEncoder.LastFilePath;
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT                
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT                
             }
 
             return null;
@@ -171,10 +171,10 @@ namespace Vimeo.Recorder
                 return _vimeoEncoder.currentFrame;
 #endif // MEDIA_ENCODER_SUPPORT
             } else if (_recorder.encoderType == EncoderType.AVProMovieCapture) {
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
                 Debug.LogWarning("[VimeoRecorder] GetCurrentFrame not supported for AVProMovieCapture");
                 return -1;
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT        
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT        
             }
 
             return -1;
@@ -227,7 +227,7 @@ namespace Vimeo.Recorder
 
         void Update()
         {
-#if VIMEO_AVPRO_CAPTURE_SUPPORT
+#if XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
             // Hooking into AVPro by monitoring status changes
             if (_recorder != null && _recorder.encoderType == EncoderType.AVProMovieCapture && _avproEncoder != null) {
                 if (_avproEncoder.IsCapturing()) {
@@ -245,7 +245,7 @@ namespace Vimeo.Recorder
                     }
                 }
             }
-#endif // VIMEO_AVPRO_CAPTURE_SUPPORT
+#endif // XXX_VIMEO_AVPRO_CAPTURE_SUPPORT
         }
 
     }
