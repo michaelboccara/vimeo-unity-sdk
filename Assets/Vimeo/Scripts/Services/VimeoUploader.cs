@@ -198,6 +198,8 @@ namespace Vimeo
 
         private void OnChunkError(VideoChunk chunk, string err)
         {
+            Debug.LogError("Chunk Error: " + err);
+
             m_isUploading = false;
             if (OnChunckUploadError != null && chunk != null) {
                 OnChunckUploadError(chunk, err);

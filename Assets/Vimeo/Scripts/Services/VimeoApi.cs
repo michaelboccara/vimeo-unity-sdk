@@ -391,6 +391,8 @@ namespace Vimeo
 
         public static AsyncOperation SendRequest(UnityWebRequest req)
         {
+            Debug.Log("Unity Web Request: " + req.method + " " + req.url);
+
 #if UNITY_2017_2_OR_NEWER
             return req.SendWebRequest();
 #else

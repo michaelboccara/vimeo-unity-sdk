@@ -157,10 +157,10 @@ namespace Vimeo
 
         public void UploadError(string msg)
         {
+            Debug.LogError("[VideoChunk] Error after " + GetBytesUploaded() + " bytes: " + msg);
+
             if (maxRetries >= 0 && m_totalRetries >= maxRetries) {
                 m_isUploading = false;
-                Debug.LogError("[VideoChunk] " + msg);
-
                 if (OnChunkUploadError != null) {
                     OnChunkUploadError(this, msg);
                 }
